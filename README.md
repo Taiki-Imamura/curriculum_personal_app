@@ -45,6 +45,9 @@
 ## 画面設計図
 [Figma](https://www.figma.com/design/Xq0lG1vWbcFr6Uo9xoK7w7/runteq_%E5%80%8B%E4%BA%BA%E3%82%A2%E3%83%97%E3%83%AA%E9%96%8B%E7%99%BA?node-id=0-1&t=DZN6xXpUFEcvfvlh-1)
 
+## ER図
+[dbdiagram](https://dbdiagram.io/d/personal_app-6826f2391227bdcb4e994f03)
+
 ## 差別化ポイント（思案中）
 * 複数日の立て替え時に、1日ごとで債権債務一覧をグラフで可視化できたら面白いのでは？
 * 払う割合をルーレットで決める機能があったら面白い？
