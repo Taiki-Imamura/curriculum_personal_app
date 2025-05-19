@@ -1,10 +1,34 @@
 import React from 'react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { v4 } from "uuid";
 import InputField from '../components/InputField'
-import { FaPeopleGroup } from "react-icons/fa6";
-import { FaPerson } from "react-icons/fa6";
+import { FaPeopleGroup, FaPerson } from "react-icons/fa6";
 import Require from "../components/Require";
 
 const Top = () => {
+  const [groupName, setGroupName] = useState<string>("");
+  const [memberName, setMemberName] = useState<string>("");
+  const [members, setMembers] = useState<string[]>([]);
+  const navigate = useNavigate();
+
+  const handleAddMember = () => {
+    if (!memberName.trim()) return;
+
+    setMembers((prev) => [...prev, memberName.trim()]);
+    setMemberName("");
+  };
+
+  const handleCreateGroup = () => {
+    if (members.length < 2) {
+      alert("メンバーは2名以上必要です");
+      return;
+    }
+
+    const groupId = v4();
+    navigate(`/publish-url/${groupId}`);
+  };
+
   return (
     <div className="overflow-y-auto">
       <h1 className="text-[26px] font-bold text-center ml-4 mt-8 leading-tight">
@@ -31,8 +55,10 @@ const Top = () => {
         label="グループ名"
         icon={FaPeopleGroup}
         optional={true}
+        value={groupName}
+        onChange={(e) => setGroupName(e.target.value)}
       />
-      <div className="mb-12">
+      <div className="mb-6">
         <div className="flex items-center mx-10 mt-6 mb-1 space-x-2">
           <FaPerson className="text-2xl" />
           <label htmlFor="member_name" className="text-xs">メンバー名（2名以上追加してください）</label>
@@ -43,13 +69,39 @@ const Top = () => {
             id="member_name"
             type="text"
             className="input input-sm bg-gray-100 border border-gray-200 px-2 w-[80%] mt-2"
+            required
+            value={memberName}
+            onChange={(e) => setMemberName(e.target.value)}
           />
-          <button className="absolute right-[10%] top-1/2 -translate-y-1/2 z-1 bg-[#F58220] rounded-md font-bold text-xs text-white mt-1 px-4 p-2 hover:cursor-pointer">追加</button>
+          <button 
+            className="absolute right-[10%] top-1/2 -translate-y-1/2 z-1 bg-[#F58220] rounded-md font-bold text-xs text-white mt-1 px-4 p-2 hover:cursor-pointer"
+            type="button"
+            onClick={handleAddMember}
+          >
+            追加
+          </button>
         </div>
       </div>
-      
+
+      {members.length > 0 && (
+        <div className="text-sm text-center mb-6">
+          <p className="font-semibold mb-1">追加されたメンバー</p>
+          <ul>
+            {members.map((name, i) => (
+              <li key={i}>{name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="text-center">
-        <button className="w-[80%] font-bold text-[#F58220] border text-xs px-4 py-2 hover:bg-[#F58220] hover:text-white">グループを作成</button>
+        <button 
+          className="w-[80%] font-bold text-[#F58220] border border-2 text-xs mt-6 px-4 py-2 hover:bg-[#F58220] hover:text-white"
+          type="submit"
+          onClick={handleCreateGroup}
+        >
+          グループを作成
+        </button>
       </div>
     </div>
   );

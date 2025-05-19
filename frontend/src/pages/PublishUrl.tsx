@@ -1,7 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom';
 import { FaCircleCheck } from "react-icons/fa6";
 
 const PublishUrl = () => {
+  const { publishId } = useParams();
+  const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
+
+  if (!publishId) {
+    navigate("/");
+  }
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(groupUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      alert("コピーに失敗しました", err);
+    }
+  };
+
+  const groupUrl = `localhost:5173/group/${publishId}/index`;
+  
+  const handleGoToGroup = () => {
+    navigate(`/group/${publishId}/index`);
+  };
+
   return (
     <div className="flex flex-col justify-center items-center">
       <FaCircleCheck color="#F58220" className="text-5xl mt-12" />
@@ -20,13 +45,23 @@ const PublishUrl = () => {
           id="member_name"
           type="text"
           className="input input-sm bg-gray-100 border border-gray-200 px-2 w-[80%] mt-2"
-          value="https://example.com/group/1234567890"
+          value={groupUrl}
           readOnly
         />
-        <button className="absolute right-[10%] top-1/2 -translate-y-1/2 z-1 bg-[#F58220] rounded-md font-bold text-xs text-white mt-1 px-4 p-2 hover:cursor-pointer">追加</button>
+        <button 
+          className="absolute right-[10%] top-1/2 -translate-y-1/2 z-1 bg-[#F58220] rounded-md font-bold text-xs text-white mt-1 px-3 p-2 hover:cursor-pointer"
+          onClick={handleCopy}
+        >
+          {copied ? "コピーしました！" : "コピー"}
+        </button>
       </div>
 
-      <button className="w-[80%] font-bold text-[#F58220] border border-2 text-xs mt-10 px-4 py-2 hover:bg-[#F58220] hover:text-white">グループページへ</button>
+      <button 
+        className="w-[80%] font-bold text-[#F58220] border border-2 text-xs mt-10 px-4 py-2 hover:bg-[#F58220] hover:text-white hover:cursor-pointer"
+        onClick={handleGoToGroup}
+      >
+        グループページへ
+      </button>
     </div>
   );
 }
