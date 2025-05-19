@@ -4,7 +4,7 @@ import NotFound from "./NotFound";
 import Layout from "./components/Layout";
 import Top from "./pages/Top";
 import PublishUrl from "./pages/PublishUrl";
-import PaymentList from "./pages/payment/PaymentList";
+import GroupList from "./pages/groups/GroupList";
 
 export const router = createBrowserRouter([
     {
@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
       path: "/group/:groupId/index",
       element: (
         <Layout>
-          <PaymentList />
+          <GroupList />
         </Layout>
       )
     },
