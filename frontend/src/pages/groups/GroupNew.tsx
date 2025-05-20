@@ -16,10 +16,15 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomDateInput } from "../../components/CustomDateInput";
+import { useNavigate, useParams } from 'react-router';
 
 const GroupNew = () => {
-  const [selected, setSelected] = useState([]);
+  const navigate = useNavigate();
+  const { groupId } = useParams();
+
+  const [selectedPayers, setSelectedPayers] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [payerAmounts, setPayerAmounts] = useState<{ [name: string]: string }>({});
 
   const names = [
     'ジョセフ',
@@ -33,11 +38,22 @@ const GroupNew = () => {
     'スピードワゴン',
   ];
 
-  const handleChange = (event) => {
+  const handlePayerChange = (event) => {
     const {
       target: { value },
     } = event;
-    setSelected(typeof value === 'string' ? value.split(',') : value);
+    const selected = typeof value === 'string' ? value.split(',') : value;
+    setSelectedPayers(selected);
+
+    setPayerAmounts((prev) =>
+      Object.fromEntries(
+        selected.map((name: string) => [name, prev[name] || ''])
+      )
+    );
+  };
+
+  const handlePayerAmountChange = (name: string, amount: string) => {
+    setPayerAmounts((prev) => ({ ...prev, [name]: amount }));
   };
 
   return (
@@ -58,8 +74,8 @@ const GroupNew = () => {
               <Select
                 labelId="multiple-checkbox-label"
                 multiple
-                value={selected}
-                onChange={handleChange}
+                value={selectedPayers}
+                onChange={handlePayerChange}
                 input={<OutlinedInput label="選択してください" />}
                 renderValue={(selected) => (selected as string[]).join(', ')}
                 sx={{ height: 36, backgroundColor: '#F3F4F7', marginLeft: 4, marginRight: 4 }}
@@ -67,12 +83,28 @@ const GroupNew = () => {
               >
                 {names.map((name) => (
                   <MenuItem key={name} value={name}>
-                    <Checkbox checked={selected.indexOf(name) > -1} />
+                    <Checkbox checked={selectedPayers.indexOf(name) > -1} />
                     <ListItemText primary={name} />
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
+          </div>
+
+          <div className="ml-8 mt-4 space-y-2">
+            {selectedPayers.map((name) => (
+              <div key={name} className="flex items-center space-x-2">
+                <span className="w-24 text-xs">{name}</span>
+                <input
+                  type="number"
+                  className="input input-xs w-24 bg-[#F3F4F7] text-xs ml-12"
+                  placeholder="立て替え額"
+                  value={payerAmounts[name] || ''}
+                  onChange={(e) => handlePayerAmountChange(name, e.target.value)}
+                />
+                <span className="text-xs">円</span>
+              </div>
+            ))}
           </div>
         </div> 
 
@@ -122,6 +154,7 @@ const GroupNew = () => {
             <input 
               type="text" 
               className="input input-sm w-[40%] bg-[#F3F4F7] ml-8 my-2 py-2"
+              placeholder="合計金額"
               required
             />
             <p className="text-xs">円</p>
@@ -138,6 +171,7 @@ const GroupNew = () => {
             <input 
               type="text" 
               className="input input-sm w-[80%] bg-[#F3F4F7] ml-8 my-2 py-2"
+              placeholder="例: 夕飯代"
               required
             />
           </div>
@@ -164,12 +198,13 @@ const GroupNew = () => {
           <button 
             className="w-[80%] font-bold bg-[#F58220] text-white border-2 text-xs px-4 py-2 hover:bg-white hover:text-[#F58220] hover:cursor-pointer hover:border-[#F58220]"
             type="submit"
+            onClick={() => navigate(`/group/${groupId}`)}
           >
             登録する
           </button>
           <button 
             className="w-[80%] font-bold bg-[#D9D9D9] text-[#62686C] text-xs px-4 py-2 hover:bg-[#62686C] hover:text-[#D9D9D9] hover:cursor-pointer"
-            type="submit"
+            onClick={() => navigate(`/group/${groupId}`)}
           >
             戻る
           </button>

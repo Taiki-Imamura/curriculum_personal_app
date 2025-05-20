@@ -16,8 +16,12 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomDateInput } from "../../components/CustomDateInput";
+import { useNavigate, useParams } from 'react-router';
 
 const GroupEdit = () => {
+  const navigate = useNavigate();
+  const { groupId } = useParams();
+
   const [selected, setSelected] = useState([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -164,12 +168,13 @@ const GroupEdit = () => {
           <button 
             className="w-[80%] font-bold bg-[#F58220] text-white border-2 text-xs px-4 py-2 hover:bg-white hover:text-[#F58220] hover:cursor-pointer hover:border-[#F58220]"
             type="submit"
+            onClick={() => navigate(`/group/${groupId}/edit/1`)}
           >
             更新する
           </button>
           <button 
             className="w-[80%] font-bold bg-[#D9D9D9] text-[#62686C] text-xs px-4 py-2 hover:bg-[#62686C] hover:text-[#D9D9D9] hover:cursor-pointer"
-            type="submit"
+            onClick={() => navigate(`/group/${groupId}/show/1`)}
           >
             戻る
           </button>

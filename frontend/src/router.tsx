@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/group/:groupId/show",
+      path: "/group/:groupId/show/:paymentId",
       element: (
         <Layout>
           <GroupShow />
@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/group/:groupId/edit",
+      path: "/group/:groupId/edit/:paymentId",
       element: (
         <Layout>
           <GroupEdit />

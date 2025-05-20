@@ -1,7 +1,11 @@
 import React from 'react'
 import GroupHeader from '../../components/GroupHeader';
+import { useNavigate, useParams } from 'react-router';
 
 const PaymentList = () => {
+  const navigate = useNavigate();
+  const { groupId } = useParams();
+
   return (
     <div className="overflow-y-auto">
       <GroupHeader />
@@ -11,7 +15,7 @@ const PaymentList = () => {
       <div className="text-center">
         <button 
           className="w-[80%] font-bold text-[#F58220] border border-2 text-xs mt-4 px-4 py-2 hover:bg-[#F58220] hover:text-white"
-          type="button"
+          onClick={() => navigate(`/group/${groupId}/new`)}
         >
           支払いを記録する
         </button>
@@ -25,6 +29,7 @@ const PaymentList = () => {
           <p className="w-[20%] text-sm">¥15000</p>
           <button 
             className="bg-[#F58220] rounded-md font-bold text-[10px] text-white px-2 py-1 hover:cursor-pointer"
+            onClick={() => navigate(`/group/${groupId}/show/1`)}
           >
             詳細
           </button>
