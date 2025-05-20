@@ -14,7 +14,7 @@ const InputField: React.FC<Props> = ({ id, label, icon: Icon, optional = false, 
   return (
     <div className="mb-8">
       <div className="flex items-center mx-10 mt-6 space-x-2">
-        <Icon className="text-2xl" />
+        <Icon color="#F58220" className="text-2xl" />
         <label htmlFor={id} className="text-xs">{label}</label>
         {optional && <Optional />}
         {require && <Require />}

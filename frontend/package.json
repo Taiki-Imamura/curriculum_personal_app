@@ -10,16 +10,28 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@heroui/react": "^2.8.0-beta.5",
+    "@mantine/core": "^8.0.1",
+    "@mantine/hooks": "^8.0.1",
+    "@mantine/modals": "^8.0.1",
+    "@mui/material": "^7.1.0",
+    "@mui/x-date-pickers": "^8.3.1",
     "@react-icons/all-files": "^4.1.0",
     "@tailwindcss/vite": "^4.1.7",
     "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "react": "^19.1.0",
+    "react-datepicker": "^8.3.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.0",
+    "react-select": "^5.10.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

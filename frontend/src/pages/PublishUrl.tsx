@@ -21,10 +21,10 @@ const PublishUrl = () => {
     }
   };
 
-  const groupUrl = `localhost:5173/group/${publishId}/index`;
+  const groupUrl = `localhost:5173/group/${publishId}`;
   
   const handleGoToGroup = () => {
-    navigate(`/group/${publishId}/index`);
+    navigate(`/group/${publishId}`);
   };
 
   return (

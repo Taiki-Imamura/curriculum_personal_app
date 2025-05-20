@@ -44,7 +44,7 @@ const Top = () => {
       <img src="src/assets/iconmonstr-angel-down-thin-120.png" alt="angel-down" className="mx-auto w-10 h-8 m-[-12px] opacity-30" />
       <img src="src/assets/iconmonstr-angel-down-thin-120.png" alt="angel-down" className="mx-auto w-10 h-8 mb-4 opacity-30" />
 
-      <h2 className="text-2xl font-bold text-center">それ、ワリペイが解決します</h2>
+      <h2 className="text-2xl font-bold text-center ml-4">それ、ワリペイが解決します。</h2>
       <p className="text-xs text-center mt-1 mb-10">ワリペイは、割り勘や立て替えのわずらわしさを<br />
         なくしてくれる無料のサービスです。
       </p>
@@ -60,7 +60,7 @@ const Top = () => {
       />
       <div className="mb-6">
         <div className="flex items-center mx-10 mt-6 mb-1 space-x-2">
-          <FaPerson className="text-2xl" />
+          <FaPerson color="#F58220" className="text-2xl" />
           <label htmlFor="member_name" className="text-xs">メンバー名（2名以上追加してください）</label>
           <Require />
         </div>
@@ -96,7 +96,7 @@ const Top = () => {
 
       <div className="text-center">
         <button 
-          className="w-[80%] font-bold text-[#F58220] border border-2 text-xs mt-6 px-4 py-2 hover:bg-[#F58220] hover:text-white"
+          className="w-[80%] font-bold bg-[#F58220] text-white text-xs mt-6 px-4 py-2 hover:bg-white hover:text-[#F58220] cursor-pointer border-2 border-[#F58220]"
           type="submit"
           onClick={handleCreateGroup}
         >
