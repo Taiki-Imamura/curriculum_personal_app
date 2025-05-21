@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import GroupHeader from '../../components/GroupHeader';
 import Require from '../../components/Require';
 import Optional from '../../components/Optional';
 import Multiple from '../../components/Multiple';
@@ -46,8 +45,6 @@ const GroupEdit = () => {
 
   return (
     <div className="overflow-y-auto">
-      <GroupHeader />
-
       <div className="mx-8 mt-10">
         <div className="mb-6">
           <div className="flex items-center mt-6 mb-1 space-x-2">

@@ -1,15 +1,12 @@
 import React from 'react'
-import GroupHeader from '../../components/GroupHeader';
 import { useNavigate, useParams } from 'react-router';
 
-const PaymentList = () => {
+const GroupList = () => {
   const navigate = useNavigate();
   const { groupId } = useParams();
 
   return (
     <div className="overflow-y-auto">
-      <GroupHeader />
-
       <h1 className="text-2xl text-center font-bold mt-10">支払いを記録しよう！</h1>
 
       <div className="text-center">
@@ -59,4 +56,4 @@ const PaymentList = () => {
   )
 }
 
-export default PaymentList;
+export default GroupList;

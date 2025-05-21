@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     namespace :v1 do
-      resources :groups, only: %i[create]
+      resources :groups, only: %i[create show]
     end
   end
 end

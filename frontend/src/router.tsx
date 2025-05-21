@@ -1,7 +1,8 @@
 import React from 'react'
 import { createBrowserRouter } from "react-router-dom";
 import NotFound from "./NotFound";
-import Layout from "./components/Layout";
+import Layout from "./components/layouts/Layout";
+import GroupLayout from "./components/layouts/GroupLayout";
 import Top from "./pages/Top";
 import PublishUrl from "./pages/PublishUrl";
 import GroupList from "./pages/groups/GroupList";
@@ -38,7 +39,9 @@ export const router = createBrowserRouter([
       path: "/group/:groupId",
       element: (
         <Layout>
-          <GroupList />
+          <GroupLayout>
+            <GroupList />
+          </GroupLayout>
         </Layout>
       )
     },
@@ -46,7 +49,9 @@ export const router = createBrowserRouter([
       path: "/group/:groupId/new",
       element: (
         <Layout>
-          <GroupNew />
+          <GroupLayout>
+            <GroupNew />
+          </GroupLayout>
         </Layout>
       )
     },
@@ -54,7 +59,9 @@ export const router = createBrowserRouter([
       path: "/group/:groupId/show/:paymentId",
       element: (
         <Layout>
-          <GroupShow />
+          <GroupLayout>
+            <GroupShow />
+          </GroupLayout>
         </Layout>
       )
     },
@@ -62,7 +69,9 @@ export const router = createBrowserRouter([
       path: "/group/:groupId/edit/:paymentId",
       element: (
         <Layout>
-          <GroupEdit />
+          <GroupLayout>
+            <GroupEdit />
+          </GroupLayout>
         </Layout>
       )
     }

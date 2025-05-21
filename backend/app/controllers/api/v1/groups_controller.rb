@@ -1,4 +1,5 @@
 class Api::V1::GroupsController < ApplicationController
+  
   def create
     ActiveRecord::Base.transaction do
       group = Group.create!(
@@ -16,5 +17,15 @@ class Api::V1::GroupsController < ApplicationController
     end
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def show
+    group = Group.find_by!(uuid: params[:id])
+    users = group.users
+
+    render json: {
+      group_name: group.name,
+      users: users.map { |user| { id: user.id, name: user.name } }
+    }
   end
 end

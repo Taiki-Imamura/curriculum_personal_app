@@ -1,5 +1,4 @@
 import React from 'react';
-import GroupHeader from '../../components/GroupHeader';
 import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaCalendar } from "react-icons/fa6";
 import { useNavigate, useParams } from 'react-router';
 
@@ -9,8 +8,6 @@ const GroupShow = () => {
 
   return (
     <div className="overflow-y-auto">
-      <GroupHeader />
-
       <div className="mx-10 mt-10">
         <div className="flex items-center mb-1 space-x-4">
           <FaPerson color="#F58220" className="text-2xl" />
