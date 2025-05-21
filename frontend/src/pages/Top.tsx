@@ -1,7 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { v4 } from "uuid";
 import InputField from '../components/InputField'
 import { FaPeopleGroup, FaPerson } from "react-icons/fa6";
 import Require from "../components/Require";
@@ -13,20 +12,51 @@ const Top = () => {
   const navigate = useNavigate();
 
   const handleAddMember = () => {
-    if (!memberName.trim()) return;
+    if (!memberName.trim()) {
+      alert('メンバー名を入力してください');
+      return;
+    }
 
     setMembers((prev) => [...prev, memberName.trim()]);
     setMemberName("");
   };
 
-  const handleCreateGroup = () => {
+  const handleCreateGroup = async () => {
+    const trimmedGroupName = groupName.trim();
+
+    if (!trimmedGroupName) {
+      alert("グループ名を入力してください");
+      return;
+    }
+
     if (members.length < 2) {
       alert("メンバーは2名以上必要です");
       return;
     }
 
-    const groupId = v4();
-    navigate(`/publish-url/${groupId}`);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/groups`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          group: {
+            name: trimmedGroupName,
+          },
+          members: members
+        }),
+      });
+
+      if (!res.ok) throw new Error("グループ作成に失敗しました");
+
+      const data = await res.json();
+      const groupId = data.uuid;
+
+      console.log("グループ作成成功", data);
+      navigate(`/publish-url/${groupId}`);
+    } catch (err) {
+      console.error(err);
+      alert("通信エラーが発生しました");
+    }
   };
 
   return (
@@ -54,7 +84,7 @@ const Top = () => {
         id="group_name"
         label="グループ名"
         icon={FaPeopleGroup}
-        optional={true}
+        require={true}
         value={groupName}
         onChange={(e) => setGroupName(e.target.value)}
       />

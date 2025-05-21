@@ -52,7 +52,7 @@ const GroupEdit = () => {
         <div className="mb-6">
           <div className="flex items-center mt-6 mb-1 space-x-2">
             <FaPerson color="#F58220" className="text-2xl" />
-            <label htmlFor="member_name" className="text-xs">支払い者</label>
+            <label htmlFor="member_name" className="text-xs">立て替え者</label>
             <Require />
             <Multiple />
           </div>

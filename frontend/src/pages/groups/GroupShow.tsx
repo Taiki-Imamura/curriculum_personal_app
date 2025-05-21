@@ -14,7 +14,7 @@ const GroupShow = () => {
       <div className="mx-10 mt-10">
         <div className="flex items-center mb-1 space-x-4">
           <FaPerson color="#F58220" className="text-2xl" />
-          <label htmlFor="payer_name" className="text-xs">支払い者</label>
+          <label htmlFor="payer_name" className="text-xs">立て替え者</label>
         </div>
         <p className="ml-10 mt-2 text-xs">ジョセフさん</p>
       </div>

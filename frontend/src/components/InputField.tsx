@@ -8,9 +8,11 @@ type Props = {
   icon: React.ComponentType<{ className?: string }>;
   optional?: boolean;
   require?: boolean;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const InputField: React.FC<Props> = ({ id, label, icon: Icon, optional = false, require = false }) => {
+const InputField: React.FC<Props> = ({ id, label, icon: Icon, optional = false, require = false, value, onChange }) => {
   return (
     <div className="mb-8">
       <div className="flex items-center mx-10 mt-6 space-x-2">
@@ -24,6 +26,8 @@ const InputField: React.FC<Props> = ({ id, label, icon: Icon, optional = false, 
           id={id}
           type="text"
           className="input input-sm bg-gray-100 border border-gray-200 px-2 w-[80%] mt-2"
+          value={value}
+          onChange={onChange} 
         />
       </div>
     </div>

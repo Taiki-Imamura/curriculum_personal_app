@@ -24,6 +24,7 @@ const GroupNew = () => {
 
   const [selectedPayers, setSelectedPayers] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [payees, setPayees] = useState<{ [name: string]: { checked: boolean; percent: string } }>({});
   const [payerAmounts, setPayerAmounts] = useState<{ [name: string]: string }>({});
 
   const names = [
@@ -56,6 +57,26 @@ const GroupNew = () => {
     setPayerAmounts((prev) => ({ ...prev, [name]: amount }));
   };
 
+  const handlePayeeCheckChange = (name: string) => {
+    setPayees((prev) => ({
+      ...prev,
+      [name]: {
+        checked: !prev[name]?.checked,
+        percent: prev[name]?.percent || '',
+      },
+    }));
+  };
+
+  const handlePayeePercentChange = (name: string, value: string) => {
+    setPayees((prev) => ({
+      ...prev,
+      [name]: {
+        ...prev[name],
+        percent: value,
+      },
+    }));
+  };
+
   return (
     <div className="overflow-y-auto">
       <GroupHeader />
@@ -64,7 +85,7 @@ const GroupNew = () => {
         <div className="mb-6">
           <div className="flex items-center mt-6 mb-1 space-x-2">
             <FaPerson color="#F58220" className="text-2xl" />
-            <label htmlFor="member_name" className="text-xs">支払い者</label>
+            <label htmlFor="member_name" className="text-xs">立て替え者</label>
             <Require />
             <Multiple />
           </div>
@@ -114,33 +135,42 @@ const GroupNew = () => {
             <label htmlFor="payer_name" className="text-xs">支払い対象者</label>
             <Require />
             <Multiple />
-            <button className="text-[10px] bg-[#F3F4F7] border-1 border-[#D9D9D9] ml-8 px-1 hover:cursor-pointer">均等にする</button>
+            <button className="text-[10px] bg-[#F3F4F7] border border-[#D9D9D9] ml-8 px-1 hover:cursor-pointer">
+              均等にする
+            </button>
           </div>
+
           <div className="mr-6 ml-8 mt-2 space-y-2">
-            {[
-              { name: '承太郎さん', value: '60' },
-              { name: '花京院さん', value: '40' }
-            ].map((person, idx) => (
-              <div key={idx} className="flex justify-between items-center space-x-2">
-                <div>
-                  <input
-                    id={`payer-${idx}`}
-                    type="checkbox"
-                    className="checkbox checkbox-sm bg-[#F3F4F7]"
-                    required
-                  />
-                  <label htmlFor={`payer-${idx}`} className="text-xs w-24 ml-4">{person.name}</label>
+            {names.map((name, idx) => {
+              const isChecked = payees[name]?.checked || false;
+              return (
+                <div key={idx} className="flex justify-between items-center space-x-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      id={`payee-${idx}`}
+                      type="checkbox"
+                      className="checkbox checkbox-sm bg-[#F3F4F7]"
+                      checked={isChecked}
+                      onChange={() => handlePayeeCheckChange(name)}
+                    />
+                    <label htmlFor={`payee-${idx}`} className="text-xs">{name}</label>
+                  </div>
+
+                  {isChecked && (
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        className="input input-xs w-16 bg-[#F3F4F7] text-xs"
+                        value={payees[name]?.percent || ''}
+                        onChange={(e) => handlePayeePercentChange(name, e.target.value)}
+                        required
+                      />
+                      <span className="text-xs ml-1">%</span>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <input
-                    className="input input-xs w-10 bg-[#F3F4F7] text-xs"
-                    defaultValue={person.value}
-                    required
-                  />
-                  <span className="text-xs ml-2">%</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
