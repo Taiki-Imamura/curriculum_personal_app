@@ -21,11 +21,31 @@ class Api::V1::GroupsController < ApplicationController
 
   def show
     group = Group.find_by!(uuid: params[:id])
-    users = group.users
+    
+    payments = group.payments.includes(:payer, payment_participants: :user)
 
     render json: {
       group_name: group.name,
-      users: users.map { |user| { id: user.id, name: user.name } }
+      users: group.users.map { |u| { id: u.id, name: u.name } },
+      payments: payments.map do |payment|
+        {
+          id: payment.id,
+          title: payment.title,
+          amount: payment.amount,
+          paid_at: payment.paid_at,
+          payer_name: payment.payer.name,
+          participants: payment.payment_participants.map do |pp|
+            {
+              user_id: pp.user_id,
+              user_name: pp.user.name,
+              share_amount: pp.share_amount,
+              share_rate: pp.share_rate,
+              paid_amount: pp.paid_amount
+            }
+          end
+        }
+      end
     }
   end
+
 end
