@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import GroupHeader from '../GroupHeader';
-
-type User = {
-  id: number;
-  name: string;
-};
+import type { User } from '../../types/types';
 
 const GroupLayout = ({ children }: { children: React.ReactNode }) => {
   const { groupId } = useParams<{ groupId: string }>();

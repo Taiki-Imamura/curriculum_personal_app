@@ -1,9 +1,111 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router';
+import type { User, Payment } from '../../types/types';
+import { formatDate } from '../../utils/date';
+import NotFound from '../../NotFound';
 
 const GroupList = () => {
   const navigate = useNavigate();
   const { groupId } = useParams();
+  const [users, setUsers] = useState<User[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    const fetchGroupData = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/groups/${groupId}`);
+        if (res.status === 404) {
+          setNotFound(true);
+          return;
+        }
+        if (!res.ok) throw new Error('fetchエラー');
+        const data = await res.json();
+        setUsers(data.users);
+        setPayments(data.payments);
+      } catch (err) {
+        console.error('グループ情報の取得に失敗しました', err);
+        setNotFound(true);
+      }
+    };
+    if (groupId) fetchGroupData();
+  }, [groupId]);
+
+  if (notFound) return <NotFound />;
+
+  // 合計金額
+  const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
+
+  // 立て替え額
+  function calculateDebts(payments: Payment[], users: User[]): Debt[] {
+  const intermediateDebts: Debt[] = [];
+
+  for (const payment of payments) {
+    const localBalances: Record<number, number> = {};
+
+    for (const participant of payment.participants) {
+      const userId = participant.user_id;
+      const delta = participant.paid_amount - participant.share_amount;
+      localBalances[userId] = (localBalances[userId] || 0) + delta;
+    }
+
+    const creditors = Object.entries(localBalances)
+      .filter(([, balance]) => balance > 0)
+      .map(([userId, balance]) => ({ userId: Number(userId), balance }));
+
+    const debtors = Object.entries(localBalances)
+      .filter(([, balance]) => balance < 0)
+      .map(([userId, balance]) => ({ userId: Number(userId), balance }));
+
+    for (const debtor of debtors) {
+      let remaining = -debtor.balance;
+
+      for (const creditor of creditors) {
+        if (remaining === 0) break;
+        if (creditor.balance === 0) continue;
+
+        const payAmount = Math.min(remaining, creditor.balance);
+
+        intermediateDebts.push({
+          from: users.find(u => u.id === debtor.userId)!.name,
+          to: users.find(u => u.id === creditor.userId)!.name,
+          amount: payAmount,
+        });
+        console.log(intermediateDebts)
+
+        creditor.balance -= payAmount;
+        remaining -= payAmount;
+      }
+    }
+  }
+
+  const summary: { [key: string]: number } = {};
+  const nameToId: { [name: string]: number } = {};
+  users.forEach(u => { nameToId[u.name] = u.id; });
+
+  intermediateDebts.forEach(debt => {
+    const [id1, id2] = [nameToId[debt.from], nameToId[debt.to]];
+    const [from, to] = id1 < id2 ? [debt.from, debt.to] : [debt.to, debt.from];
+    const key = `${from}|${to}`;
+
+    summary[key] = (summary[key] || 0) + (id1 < id2 ? debt.amount : -debt.amount);
+  });
+
+  const finalDebts: Debt[] = [];
+
+  Object.entries(summary).forEach(([key, netAmount]) => {
+    if (netAmount === 0) return;
+    const [from, to] = key.split("|");
+    if (netAmount > 0) {
+      finalDebts.push({ from, to, amount: netAmount });
+    } else {
+      finalDebts.push({ from: to, to: from, amount: -netAmount });
+    }
+  });
+
+  return finalDebts;
+}
+  const debts = calculateDebts(payments, users);
 
   return (
     <div className="overflow-y-auto">
@@ -11,46 +113,53 @@ const GroupList = () => {
 
       <div className="text-center">
         <button 
-          className="w-[80%] font-bold text-[#F58220] border border-2 text-xs mt-4 px-4 py-2 hover:bg-[#F58220] hover:text-white"
+          className="w-[80%] font-bold text-[#F58220] border border-2 text-xs my-4 px-4 py-2 hover:bg-[#F58220] hover:text-white"
           onClick={() => navigate(`/group/${groupId}/new`)}
         >
           支払いを記録する
         </button>
 
-        <div className="flex mx-6 mt-6 px-2 justify-between items-center border-b-2 border-gray-200 mb-10 pb-2">
-          <div className="flex flex-col items-start w-[65%]">
-            <p className="text-sm">夕飯代</p>
-            <p className="text-[10px] text-gray-500">ジョセフが立て替え（5/19）</p>
-            <p className="text-[10px] text-gray-500">承太郎・ジョセフ・ポルナレフ・アブドゥル</p>
-          </div>
-          <p className="w-[20%] text-sm">¥15000</p>
-          <button 
-            className="bg-[#F58220] rounded-md font-bold text-[10px] text-white px-2 py-1 hover:cursor-pointer"
-            onClick={() => navigate(`/group/${groupId}/show/1`)}
-          >
-            詳細
-          </button>
-        </div>
 
-        <div className="mb-6">
-          <p className="text-start text-sm font-bold mb-2 px-12">合計金額</p>
-          <p className="font-bold text-2xl">¥15000</p>
-        </div>
-
-        <div className="mb-6">
-          <p className="text-start text-sm font-bold mt-8 mb-4 px-12">平均割り勘額</p>
-          <p className="font-bold text-2xl">¥7500</p>
-        </div>
-
-        <div className="mb-6">
-          <p className="text-start text-sm font-bold my-4 px-12">立て替え額</p>
-          <div className="flex mx-10 px-2 justify-between items-center border-b-2 border-gray-200 mb-4 pb-2">
-            <div className="flex flex-col items-start">
-              <p className="text-xs">承太郎 → ジョセフ</p>
+        {payments.map((payment) => (
+          <div key={payment.id} className="flex justify-between items-center border-b-2 border-gray-200 mx-6 mt-6 px-2 pb-2">
+            <div className="flex flex-col items-start w-[65%]">
+              <p className="text-sm">{payment.title}</p>
+              <p className="text-[10px] text-gray-500">{payment.payer_name}が立て替え（{formatDate(payment.paid_at)}）</p>
+              <p className="text-start text-[10px] text-gray-500">
+                {payment.participants.map(p => p.user_name).join('・')}
+              </p>
             </div>
-            <p className="w-[20%] text-xs">¥15000</p>
+            <p className="w-[20%] text-sm">¥{payment.amount}</p>
+            <button 
+              className="bg-[#F58220] rounded-md font-bold text-[10px] text-white px-2 py-1 hover:cursor-pointer"
+              onClick={() => navigate(`/group/${groupId}/show/1`)}
+            >
+              詳細
+            </button>
           </div>
+        ))}
+
+        <div className="mt-10 mb-6">
+          <p className="text-start text-sm font-bold mb-2 px-12">合計金額</p>
+          <p className="font-bold text-2xl">¥{totalAmount}</p>
         </div>
+
+        {debts.length > 0 && (
+          <div className="mb-6">
+            <p className="text-start text-sm font-bold my-4 px-12">立て替え額</p>
+            {debts.map((debt, index) => (
+              <div
+                key={index}
+                className="flex mx-10 px-2 justify-between items-center border-b-2 border-gray-200 mb-4 pb-2"
+              >
+                <div className="flex flex-col items-start">
+                  <p className="text-xs">{debt.from} → {debt.to}</p>
+                </div>
+                <p className="w-[20%] text-xs">¥{debt.amount}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
