@@ -1,6 +1,5 @@
 class Payment < ApplicationRecord
-  belongs_to :group
-  belongs_to :payer, class_name: 'User', foreign_key: 'payer_id'
+  belongs_to :group, primary_key: 'uuid', foreign_key: 'group_uuid'
 
   has_many :payment_participants, dependent: :destroy
   has_many :participants, through: :payment_participants, source: :user

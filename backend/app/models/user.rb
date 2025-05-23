@@ -2,6 +2,5 @@ class User < ApplicationRecord
   has_many :group_users
   has_many :groups, through: :group_users
 
-  has_many :payments_made, class_name: 'Payment', foreign_key: 'payer_id'
   has_many :payment_participants
 end

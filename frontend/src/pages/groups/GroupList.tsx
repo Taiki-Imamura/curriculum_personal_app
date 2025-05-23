@@ -6,7 +6,7 @@ import NotFound from '../../NotFound';
 
 const GroupList = () => {
   const navigate = useNavigate();
-  const { groupId } = useParams();
+  const { uuid } = useParams();
   const [users, setUsers] = useState<User[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [notFound, setNotFound] = useState(false);
@@ -14,11 +14,10 @@ const GroupList = () => {
   useEffect(() => {
     const fetchGroupData = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/groups/${groupId}`);
-        if (res.status === 404) {
-          setNotFound(true);
-          return;
-        }
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/groups/${uuid}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
         if (!res.ok) throw new Error('fetchエラー');
         const data = await res.json();
         setUsers(data.users);
@@ -28,8 +27,8 @@ const GroupList = () => {
         setNotFound(true);
       }
     };
-    if (groupId) fetchGroupData();
-  }, [groupId]);
+    if (uuid) fetchGroupData();
+  }, [uuid]);
 
   if (notFound) return <NotFound />;
 
@@ -71,7 +70,6 @@ const GroupList = () => {
           to: users.find(u => u.id === creditor.userId)!.name,
           amount: payAmount,
         });
-        console.log(intermediateDebts)
 
         creditor.balance -= payAmount;
         remaining -= payAmount;
@@ -114,7 +112,7 @@ const GroupList = () => {
       <div className="text-center">
         <button 
           className="w-[80%] font-bold text-[#F58220] border border-2 text-xs my-4 px-4 py-2 hover:bg-[#F58220] hover:text-white"
-          onClick={() => navigate(`/group/${groupId}/new`)}
+          onClick={() => navigate(`/group/${uuid}/new`, { state: { users } })}
         >
           支払いを記録する
         </button>
@@ -124,7 +122,10 @@ const GroupList = () => {
           <div key={payment.id} className="flex justify-between items-center border-b-2 border-gray-200 mx-6 mt-6 px-2 pb-2">
             <div className="flex flex-col items-start w-[65%]">
               <p className="text-sm">{payment.title}</p>
-              <p className="text-[10px] text-gray-500">{payment.payer_name}が立て替え（{formatDate(payment.paid_at)}）</p>
+              <p className="text-[10px] text-gray-500">
+                {payment.participants.filter((p) => p.is_payer).map((p) => p.user_name).join('・')}が立て替え
+                （{formatDate(payment.paid_at)}）
+              </p>
               <p className="text-start text-[10px] text-gray-500">
                 {payment.participants.map(p => p.user_name).join('・')}
               </p>
@@ -132,7 +133,7 @@ const GroupList = () => {
             <p className="w-[20%] text-sm">¥{payment.amount}</p>
             <button 
               className="bg-[#F58220] rounded-md font-bold text-[10px] text-white px-2 py-1 hover:cursor-pointer"
-              onClick={() => navigate(`/group/${groupId}/show/1`)}
+              onClick={() => navigate(`/group/${uuid}/show/1`)}
             >
               詳細
             </button>

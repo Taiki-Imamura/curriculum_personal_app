@@ -1,5 +1,4 @@
 class Api::V1::GroupsController < ApplicationController
-  
   def create
     ActiveRecord::Base.transaction do
       group = Group.create!(
@@ -22,7 +21,7 @@ class Api::V1::GroupsController < ApplicationController
   def show
     group = Group.find_by!(uuid: params[:id])
     
-    payments = group.payments.includes(:payer, payment_participants: :user)
+    payments = group.payments.includes(payment_participants: :user)
 
     render json: {
       group_name: group.name,
@@ -33,11 +32,11 @@ class Api::V1::GroupsController < ApplicationController
           title: payment.title,
           amount: payment.amount,
           paid_at: payment.paid_at,
-          payer_name: payment.payer.name,
           participants: payment.payment_participants.map do |pp|
             {
               user_id: pp.user_id,
               user_name: pp.user.name,
+              is_payer: pp.is_payer,
               share_amount: pp.share_amount,
               share_rate: pp.share_rate,
               paid_amount: pp.paid_amount
@@ -47,5 +46,4 @@ class Api::V1::GroupsController < ApplicationController
       end
     }
   end
-
 end

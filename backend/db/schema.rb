@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_21_034359) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_23_032219) do
   create_table "group_users", force: :cascade do |t|
     t.integer "group_id", null: false
     t.integer "user_id", null: false
@@ -36,20 +36,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_034359) do
     t.integer "paid_amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_payer", default: false, null: false
     t.index ["payment_id"], name: "index_payment_participants_on_payment_id"
     t.index ["user_id"], name: "index_payment_participants_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
-    t.integer "group_id", null: false
-    t.integer "payer_id", null: false
     t.string "title"
     t.integer "amount"
     t.datetime "paid_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["group_id"], name: "index_payments_on_group_id"
-    t.index ["payer_id"], name: "index_payments_on_payer_id"
+    t.string "group_uuid"
+    t.index ["group_uuid"], name: "index_payments_on_group_uuid"
   end
 
   create_table "users", force: :cascade do |t|
@@ -62,6 +61,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_034359) do
   add_foreign_key "group_users", "users"
   add_foreign_key "payment_participants", "payments"
   add_foreign_key "payment_participants", "users"
-  add_foreign_key "payments", "groups"
-  add_foreign_key "payments", "users", column: "payer_id"
 end

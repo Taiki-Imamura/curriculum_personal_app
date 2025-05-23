@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/group/:groupId",
+      path: "/group/:uuid",
       element: (
         <Layout>
           <GroupLayout>
@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/group/:groupId/new",
+      path: "/group/:uuid/new",
       element: (
         <Layout>
           <GroupLayout>
@@ -56,7 +56,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/group/:groupId/show/:paymentId",
+      path: "/group/:uuid/show/:paymentId",
       element: (
         <Layout>
           <GroupLayout>
@@ -66,7 +66,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/group/:groupId/edit/:paymentId",
+      path: "/group/:uuid/edit/:paymentId",
       element: (
         <Layout>
           <GroupLayout>
