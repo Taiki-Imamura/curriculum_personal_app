@@ -83,7 +83,7 @@ const GroupNew = () => {
     }
 
     if (selectedDate) {
-      const formattedDate = formatDate(selectedDate);
+      const formattedDate = formatDate(selectedDate.toISOString());
       console.log("支払い日:", formattedDate);
     }
 

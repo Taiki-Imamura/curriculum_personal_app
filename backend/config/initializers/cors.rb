@@ -7,7 +7,13 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'http://localhost:5173'
+    origins(
+      if Rails.env.production?
+        '*'
+      else
+        'http://localhost:5173'
+      end
+    )
 
     resource "*",
       headers: :any,
