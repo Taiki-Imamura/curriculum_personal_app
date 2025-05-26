@@ -156,6 +156,7 @@ const GroupEdit = () => {
 
       const data = await res.json();
       console.log("支払い更新成功", data);
+      alert("支払い更新に成功しました");
       navigate(`/group/${uuid}/show/${paymentId}`);
     } catch (err) {
       console.error(err);
