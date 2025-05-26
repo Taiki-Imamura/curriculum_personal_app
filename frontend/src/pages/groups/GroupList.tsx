@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router';
-import type { User, Payment } from '../../types/types';
+import type { User, Payment, Debt } from '../../types/types';
 import { formatDate } from '../../utils/date';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import NotFound from '../../NotFound';

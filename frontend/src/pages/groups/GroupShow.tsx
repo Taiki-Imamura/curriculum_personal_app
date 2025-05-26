@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaCalendar } from "react-icons/fa6";
 import { useNavigate, useParams } from 'react-router';
 import type { Payment } from '../../types/types';

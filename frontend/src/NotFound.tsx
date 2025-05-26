@@ -1,17 +1,18 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const NotFound = () => {
-  const location = useLocation();
-  const previousPath = location.state?.from || '/';
+  const navigate = useNavigate();
 
   return (
-    <div className="text-center mt-20">
-      <h1 className="text-2xl font-bold">404 - ページが見つかりません</h1>
-      <p className="mt-4">お探しのページは存在しないか、移動しました。</p>
-      <Link to={previousPath} className="text-blue-500 underline mt-6 inline-block">
-        ホームに戻る
-      </Link>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="text-2xl font-bold mb-4">404</h1>
+      <p className="mb-4">ページが見つかりませんでした。</p>
+      <button
+        className="bg-[#F58220] text-white px-4 py-2 rounded hover:bg-[#E5731F]"
+        onClick={() => navigate('/')}
+      >
+        トップページに戻る
+      </button>
     </div>
   );
 };

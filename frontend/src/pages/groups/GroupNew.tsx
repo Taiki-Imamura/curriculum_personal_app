@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Require from '../../components/Require';
 import Optional from '../../components/Optional';
 import Multiple from '../../components/Multiple';
@@ -12,11 +12,13 @@ import {
   ListItemText,
   OutlinedInput,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomDateInput } from "../../components/CustomDateInput";
 import { useNavigate, useParams, useLocation } from 'react-router';
 import { formatDate } from '../../utils/date';
+import type { User } from '../../types/types';
 
 const GroupNew = () => {
   const navigate = useNavigate();
@@ -109,22 +111,22 @@ const GroupNew = () => {
             content,
             paid_at: selectedDate ? selectedDate.toISOString().split('T')[0] : Date.now(),
             payment_participants: users
-            .filter((user) => 
-              selectedPayers.some(p => p.id === user.id) || 
-              payeeParticipants.some(p => p.name === user.name)
-            )
-            .map((user) => {
-              const payer = selectedPayers.find(p => p.id === user.id);
-              const payee = payeeParticipants.find(p => p.name === user.name);
+              .filter((user: User) => 
+                selectedPayers.some(p => p.id === user.id) || 
+                payeeParticipants.some(p => p.name === user.name)
+              )
+              .map((user: User) => {
+                const payer = selectedPayers.find(p => p.id === user.id);
+                const payee = payeeParticipants.find(p => p.name === user.name);
 
-              return {
-                user_id: user.id,
-                is_payer: payer ? true : false,
-                paid_amount: payer ? Number(payerAmounts[payer.id] || 0) : 0,
-                share_rate: payee ? Number(payee.share_rate) : 0,
-                share_amount: payee ? Number(payee.share_amount) : 0,
-              };
-            }),
+                return {
+                  user_id: user.id,
+                  is_payer: payer ? true : false,
+                  paid_amount: payer ? Number(payerAmounts[payer.id] || 0) : 0,
+                  share_rate: payee ? Number(payee.share_rate) : 0,
+                  share_amount: payee ? Number(payee.share_amount) : 0,
+                };
+              }),
           }
         })
       });
@@ -140,13 +142,13 @@ const GroupNew = () => {
     }
   };
 
-  const handlePayerChange = (event) => {
+  const handlePayerChange = (event: SelectChangeEvent<number[]>) => {
     const {
       target: { value },
     } = event;
 
-    const selectedIds = typeof value === 'string' ? value.split(',') : value;
-    const selectedUsers = users.filter((user) => selectedIds.includes(user.id));
+    const selectedIds = typeof value === 'string' ? value.split(',').map(Number) : value;
+    const selectedUsers = users.filter((user: User) => selectedIds.includes(user.id));
     setSelectedPayers(selectedUsers);
 
     const trimmedTotalAmount = totalAmount.trim();
@@ -157,19 +159,19 @@ const GroupNew = () => {
       const baseAmount = Math.floor(totalAmountNumber / selectedUsers.length);
       const remainder = totalAmountNumber - baseAmount * selectedUsers.length;
 
-      selectedUsers.forEach((user, idx) => {
+      selectedUsers.forEach((user: User, idx: number) => {
         updatedPayerAmounts[user.id] = String(baseAmount + (idx === selectedUsers.length - 1 ? remainder : 0));
       });
     } else {
       updatedPayerAmounts = Object.fromEntries(
-        selectedUsers.map((user) => [user.id, payerAmounts[user.id] || ''])
+        selectedUsers.map((user: User) => [user.id, payerAmounts[user.id] || ''])
       );
     }
     setPayerAmounts(updatedPayerAmounts);
 
     const updatedPayees = { ...payees };
 
-    selectedUsers.forEach((user) => {
+    selectedUsers.forEach((user: User) => {
       if (!updatedPayees[user.name]) {
         updatedPayees[user.name] = {
           checked: true,
@@ -180,12 +182,12 @@ const GroupNew = () => {
       }
     });
 
-    const checkedUsers = users.filter((user) => updatedPayees[user.name]?.checked);
+    const checkedUsers = users.filter((user: User) => updatedPayees[user.name]?.checked);
     if (checkedUsers.length > 0) {
       const basePercent = Math.floor(100 / checkedUsers.length);
       const remainder = 100 - basePercent * checkedUsers.length;
 
-      checkedUsers.forEach((user, idx) => {
+      checkedUsers.forEach((user: User, idx: number) => {
         updatedPayees[user.name].percent = String(basePercent + (idx === checkedUsers.length - 1 ? remainder : 0));
       });
     }
@@ -208,13 +210,13 @@ const GroupNew = () => {
       },
     };
 
-    const checkedUsers = users.filter((user) => updatedPayees[user.name]?.checked);
+    const checkedUsers = users.filter((user: User) => updatedPayees[user.name]?.checked);
 
     if (checkedUsers.length > 0) {
       const base = Math.floor(100 / checkedUsers.length);
       const remainder = 100 - base * checkedUsers.length;
 
-      checkedUsers.forEach((user, idx) => {
+      checkedUsers.forEach((user: User, idx: number) => {
         updatedPayees[user.name] = {
           checked: true,
           percent: String(base + (idx === checkedUsers.length - 1 ? remainder : 0)),
@@ -245,7 +247,7 @@ const GroupNew = () => {
   };
 
   const handleEvenDistribution = () => {
-    const checkedUsers = users.filter((user) => payees[user.name]?.checked);
+    const checkedUsers = users.filter((user: User) => payees[user.name]?.checked);
 
     if (checkedUsers.length === 0) return;
 
@@ -254,7 +256,7 @@ const GroupNew = () => {
 
     const newPayees = { ...payees };
 
-    checkedUsers.forEach((user, idx) => {
+    checkedUsers.forEach((user: User, idx: number) => {
       newPayees[user.name] = {
         checked: true,
         percent: String(base + (idx === checkedUsers.length - 1 ? remainder : 0)),
@@ -304,13 +306,13 @@ const GroupNew = () => {
                 input={<OutlinedInput label="選択してください" />}
                 renderValue={(selected) =>
                   (selected as number[])
-                    .map((id) => users.find((u) => u.id === id)?.name || '')
+                    .map((id: number) => users.find((u: User) => u.id === id)?.name || '')
                     .join(', ')
                 }
                 sx={{ height: 36, backgroundColor: '#F3F4F7', marginLeft: 4, marginRight: 4 }}
                 required
               >
-                {users.map((user) => (
+                {users.map((user: User) => (
                   <MenuItem key={user.id} value={user.id}>
                     <Checkbox checked={selectedPayers.some((p) => p.id === user.id)} />
                     <ListItemText primary={user.name} />
@@ -353,7 +355,7 @@ const GroupNew = () => {
           </div>
 
           <div className="mr-6 ml-8 mt-2 space-y-2">
-            {users.map((user, idx) => {
+            {users.map((user: User, idx: number) => {
               const isChecked = payees[user.name]?.checked || false;
               return (
                 <div key={idx} className="flex justify-between items-center space-x-2">

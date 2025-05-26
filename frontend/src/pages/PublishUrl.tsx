@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaCircleCheck } from "react-icons/fa6";
 
@@ -17,7 +17,7 @@ const PublishUrl = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      alert("コピーに失敗しました", err);
+      alert("コピーに失敗しました");
     }
   };
 

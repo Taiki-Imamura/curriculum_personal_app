@@ -9,6 +9,7 @@ export type Participant = {
   share_amount: number;
   share_rate: number;
   paid_amount: number;
+  is_payer: boolean;
 };
 
 export type Payment = {

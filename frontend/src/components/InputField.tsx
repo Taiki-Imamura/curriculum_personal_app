@@ -5,7 +5,7 @@ import Require from "./Require";
 type Props = {
   id: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; color?: string }>;
   optional?: boolean;
   require?: boolean;
   value: string;

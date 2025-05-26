@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Require from '../../components/Require';
 import Optional from '../../components/Optional';
 import Multiple from '../../components/Multiple';
@@ -12,11 +12,12 @@ import {
   ListItemText,
   OutlinedInput,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomDateInput } from "../../components/CustomDateInput";
 import { useNavigate, useParams } from 'react-router';
-import type { User } from '../../types/types';
+import type { User, Payment, Participant } from '../../types/types';
 import LoadingSpinner from '../../components/LoadingSpinner'
 import NotFound from '../../NotFound';
 
@@ -43,19 +44,19 @@ const GroupEdit = () => {
         const data = await res.json();
         setUsers(data.users);
         
-        const targetPayment = data.payments.find(p => p.id === Number(paymentId));
+        const targetPayment = data.payments.find((p: Payment) => p.id === Number(paymentId));
         if (!targetPayment) return setNotFound(true);
 
         setTotalAmount(String(targetPayment.amount));
         setContent(targetPayment.title);
         setSelectedDate(new Date(targetPayment.paid_at));
 
-        const payers = targetPayment.participants.filter(p => p.is_payer);
-        setSelectedPayers(payers.map(p => ({ id: p.user_id, name: p.user_name })));
-        setPayerAmounts(Object.fromEntries(payers.map(p => [p.user_id, String(p.paid_amount)])));
+        const payers = targetPayment.participants.filter((p: Participant) => p.is_payer);
+        setSelectedPayers(payers.map((p: Participant) => ({ id: p.user_id, name: p.user_name })));
+        setPayerAmounts(Object.fromEntries(payers.map((p: Participant) => [p.user_id, String(p.paid_amount)])));
 
         const newPayees: { [name: string]: { checked: boolean; percent: string } } = {};
-        targetPayment.participants.forEach(p => {
+        targetPayment.participants.forEach((p: Participant) => {
           newPayees[p.user_name] = {
             checked: true,
             percent: p.share_rate !== null ? String(p.share_rate) : '',
@@ -162,12 +163,12 @@ const GroupEdit = () => {
     }
   };
 
-  const handlePayerChange = (event) => {
+  const handlePayerChange = (event: SelectChangeEvent<number[]>) => {
     const {
       target: { value },
     } = event;
 
-    const selectedIds = typeof value === 'string' ? value.split(',') : value;
+    const selectedIds = typeof value === 'string' ? value.split(',').map(Number) : value;
     const selectedUsers = users.filter((user) => selectedIds.includes(user.id));
     setSelectedPayers(selectedUsers);
 
