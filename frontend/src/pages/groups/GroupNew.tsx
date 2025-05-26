@@ -52,7 +52,7 @@ const GroupNew = () => {
     const trimmedTotalAmount = totalAmount.trim();
     const totalAmountNumber = Number(trimmedTotalAmount);
 
-    if (!trimmedTotalAmount || isNaN(totalAmountNumber)) {
+    if (!trimmedTotalAmount || isNaN(totalAmountNumber) || totalAmountNumber <= 0) {
       alert("合計金額を正しく入力してください");
       return;
     }
@@ -149,34 +149,46 @@ const GroupNew = () => {
     const selectedUsers = users.filter((user) => selectedIds.includes(user.id));
     setSelectedPayers(selectedUsers);
 
-    setPayerAmounts((prev) =>
-      Object.fromEntries(
-        selectedUsers.map((user) => [user.id, prev[user.id] || ''])
-      )
-    );
+    const trimmedTotalAmount = totalAmount.trim();
+    const totalAmountNumber = Number(trimmedTotalAmount);
+
+    let updatedPayerAmounts: { [id: number]: string } = {};
+    if (!isNaN(totalAmountNumber) && totalAmountNumber > 0 && selectedUsers.length > 0) {
+      const baseAmount = Math.floor(totalAmountNumber / selectedUsers.length);
+      const remainder = totalAmountNumber - baseAmount * selectedUsers.length;
+
+      selectedUsers.forEach((user, idx) => {
+        updatedPayerAmounts[user.id] = String(baseAmount + (idx === selectedUsers.length - 1 ? remainder : 0));
+      });
+    } else {
+      updatedPayerAmounts = Object.fromEntries(
+        selectedUsers.map((user) => [user.id, payerAmounts[user.id] || ''])
+      );
+    }
+    setPayerAmounts(updatedPayerAmounts);
 
     const updatedPayees = { ...payees };
 
-    users.forEach((user) => {
-      updatedPayees[user.name] = {
-        checked: false,
-        percent: '',
-      };
-    });
-
     selectedUsers.forEach((user) => {
-      updatedPayees[user.name] = {
-        checked: true,
-        percent: '',
-      };
+      if (!updatedPayees[user.name]) {
+        updatedPayees[user.name] = {
+          checked: true,
+          percent: '',
+        };
+      } else {
+        updatedPayees[user.name].checked = true;
+      }
     });
 
-    const base = Math.floor(100 / selectedUsers.length);
-    const remainder = 100 - base * selectedUsers.length;
+    const checkedUsers = users.filter((user) => updatedPayees[user.name]?.checked);
+    if (checkedUsers.length > 0) {
+      const basePercent = Math.floor(100 / checkedUsers.length);
+      const remainder = 100 - basePercent * checkedUsers.length;
 
-    selectedUsers.forEach((user, idx) => {
-      updatedPayees[user.name].percent = String(base + (idx === selectedUsers.length - 1 ? remainder : 0));
-    });
+      checkedUsers.forEach((user, idx) => {
+        updatedPayees[user.name].percent = String(basePercent + (idx === checkedUsers.length - 1 ? remainder : 0));
+      });
+    }
 
     setPayees(updatedPayees);
   };
