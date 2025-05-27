@@ -88,4 +88,6 @@ Rails.application.configure do
   config.middleware.insert_before 0, Rack::Rewrite do
     rewrite %r{.*}, '/index.html'
   end
+
+  config.assets.compile = false
 end
