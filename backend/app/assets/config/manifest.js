@@ -1,3 +1,2 @@
-//= link_tree ../images
-//= link_directory ../stylesheets .css
-//= link_tree ../builds
+// This file allows plugin assets to be added to the precompile array
+// that would otherwise be left out.
