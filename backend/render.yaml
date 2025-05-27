@@ -1,7 +1,7 @@
 databases:
   - name: personal-app
     databaseName: personal-app
-    user: Taiki Imamura
+    user: curriculum_personal_app
     region: singapore
 
 services:
