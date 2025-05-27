@@ -30,5 +30,7 @@ module Backend
     config.api_only = true
 
     config.hosts << 'https://curriculum-personal-app.onrender.com'
+
+    config.middleware.insert_after(::Rack::Sendfile, ::ActionDispatch::Static, "#{root}/public")
   end
 end
