@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import InputField from '../components/InputField'
 import { FaPeopleGroup, FaPerson } from "react-icons/fa6";
 import Require from "../components/Require";
+import AngleDown from "../assets/iconmonstr-angel-down-thin-120.png";
 
 const Top = () => {
   const [groupName, setGroupName] = useState<string>("");
@@ -69,9 +70,9 @@ const Top = () => {
         誰が誰にいくら払えば良いのか困った経験、ありませんか？
       </p>
 
-      <img src="src/assets/iconmonstr-angel-down-thin-120.png" alt="angel-down" className="mx-auto w-10 h-8 mt-4 opacity-30" />
-      <img src="src/assets/iconmonstr-angel-down-thin-120.png" alt="angel-down" className="mx-auto w-10 h-8 m-[-12px] opacity-30" />
-      <img src="src/assets/iconmonstr-angel-down-thin-120.png" alt="angel-down" className="mx-auto w-10 h-8 mb-4 opacity-30" />
+      <img src={AngleDown} alt="angel-down" className="mx-auto w-10 h-8 mt-4 opacity-30" />
+      <img src={AngleDown} alt="angel-down" className="mx-auto w-10 h-8 m-[-12px] opacity-30" />
+      <img src={AngleDown} alt="angel-down" className="mx-auto w-10 h-8 mb-4 opacity-30" />
 
       <h2 className="text-2xl font-bold text-center ml-4">それ、ワリペイが解決します。</h2>
       <p className="text-xs text-center mt-1 mb-10">ワリペイは、割り勘や立て替えのわずらわしさを<br />
