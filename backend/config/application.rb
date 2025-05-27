@@ -29,7 +29,7 @@ module Backend
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    config.hosts << 'https://curriculum-personal-app.onrender.com'
+    config.hosts << 'curriculum-personal-app.onrender.com'
 
     config.middleware.insert_after(::Rack::Sendfile, ::ActionDispatch::Static, "#{root}/public")
   end
