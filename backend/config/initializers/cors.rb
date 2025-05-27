@@ -9,7 +9,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins(
       if Rails.env.production?
-        '*'
+        'https://curriculum-personal-app.vercel.app'
       else
         'http://localhost:5173'
       end
