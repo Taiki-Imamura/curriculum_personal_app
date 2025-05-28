@@ -21,7 +21,7 @@ class Api::V1::GroupsController < ApplicationController
   def show
     group = Group.find_by!(uuid: params[:id])
     
-    payments = group.payments.includes(payment_participants: :user)
+    payments = group.payments.includes(payment_participants: :user, payment_paypay_links: [])
 
     render json: {
       group_name: group.name,
@@ -40,6 +40,12 @@ class Api::V1::GroupsController < ApplicationController
               share_amount: pp.share_amount,
               share_rate: pp.share_rate,
               paid_amount: pp.paid_amount
+            }
+          end,
+          paypay_links: payment.payment_paypay_links.map do |pl|
+            {
+              paypay_link: pl.paypay_link,
+              display_on_list: pl.display_on_list
             }
           end
         }

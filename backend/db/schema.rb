@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_23_032219) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_28_074221) do
   create_table "group_users", force: :cascade do |t|
     t.integer "group_id", null: false
     t.integer "user_id", null: false
@@ -41,6 +41,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_032219) do
     t.index ["user_id"], name: "index_payment_participants_on_user_id"
   end
 
+  create_table "payment_paypay_links", force: :cascade do |t|
+    t.integer "payment_id", null: false
+    t.string "paypay_link"
+    t.boolean "display_on_list"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_id"], name: "index_payment_paypay_links_on_payment_id"
+  end
+
   create_table "payments", force: :cascade do |t|
     t.string "title"
     t.integer "amount"
@@ -61,4 +70,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_032219) do
   add_foreign_key "group_users", "users"
   add_foreign_key "payment_participants", "payments"
   add_foreign_key "payment_participants", "users"
+  add_foreign_key "payment_paypay_links", "payments"
 end

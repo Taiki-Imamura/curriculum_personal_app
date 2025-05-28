@@ -21,6 +21,11 @@ export type Payment = {
   participants: Participant[];
 };
 
+export type LinkItem = {
+  paypay_link: string;
+  display_on_list: boolean;
+};
+
 export type Debt = {
   from: string;
   to: string;
