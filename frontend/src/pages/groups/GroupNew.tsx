@@ -64,6 +64,11 @@ const GroupNew = () => {
       return;
     }
 
+    if (!content) {
+      alert("内容を記入してください")
+      return;
+    }
+
     const totalPayerAmount = selectedPayers.reduce((sum, payer) => {
       return sum + Number(payerAmounts[payer.id] || 0);
     }, 0);
