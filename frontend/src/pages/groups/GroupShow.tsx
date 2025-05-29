@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaLink, FaCalendar } from "react-icons/fa6";
 import { useNavigate, useParams } from 'react-router';
 import type { Payment } from '../../types/types';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import NotFound from '../../NotFound';
 import { formatDate } from '../../utils/date';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const GroupShow = () => {
   const navigate = useNavigate();
@@ -12,6 +16,7 @@ const GroupShow = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [unit, setUnit] = React.useState('');
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -74,29 +79,40 @@ const GroupShow = () => {
   const calculates = calculateDebts(balances);
 
   const handleDelete = async () => {
-  if (!confirm("本当に削除しますか？")) return;
+    if (!confirm("本当に削除しますか？")) return;
 
-  try {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/v1/groups/${uuid}/payments/${paymentId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/groups/${uuid}/payments/${paymentId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
+      );
 
-    if (!res.ok) throw new Error('削除に失敗しました');
+      if (!res.ok) throw new Error('削除に失敗しました');
 
-    alert("削除が完了しました");
-    navigate(`/group/${uuid}`);
-  } catch (err) {
-    console.error(err);
-    alert("削除に失敗しました。");
-  }
-};
+      alert("削除が完了しました");
+      navigate(`/group/${uuid}`);
+    } catch (err) {
+      console.error(err);
+      alert("削除に失敗しました。");
+    }
+  };
 
+  // 金額単位の変更
+  const handleUnitChange = (event: SelectChangeEvent) => {
+    setUnit(event.target.value);
+  };
+
+  // 金額単位に応じて立て替え楽の表示変更
+  const formatAmount = (amount: number, unit: string): string => {
+    const unitValue = Number(unit) || 1;
+    const rounded = Math.round(amount / unitValue) * unitValue;
+    return `¥${rounded}`;
+  };
 
   return (
     <div className="overflow-y-auto">
@@ -129,26 +145,54 @@ const GroupShow = () => {
         </div>
 
         <div>
-          <div className="flex items-center mb-4 space-x-4">
+          <div className="flex items-center space-x-4">
             <FaCreditCard color="#F58220" className="text-2xl" />
             <label className="text-xs">支払い金額</label>
           </div>
-          <p className="ml-10 text-xs">¥{payment.amount}</p>
-          {calculates.length > 0 && (
-          <div className="mt-6 mb-8">
-            {calculates.map((c, index) => (
-              <div
-                key={index}
-                className="flex ml-8 mr-6 mb-4 px-2 pb-2 justify-between items-center border-b-2 border-gray-200"
+          <div className="flex justify-between items-center h-8 mr-6 mb-4">
+            <p className="ml-10 text-xs">¥{payment.amount}</p>
+            <FormControl variant="standard">
+              <InputLabel 
+                id="amount-unit-label" 
+                sx={{ fontSize: '12px' }}
               >
-                <div className="flex flex-col items-start">
-                  <p className="text-xs">{c.from} → {c.to}</p>
-                </div>
-                <p className="w-[20%] text-xs">¥{c.amount}</p>
-              </div>
-            ))}
+                金額単位
+              </InputLabel>
+              <Select
+                labelId="amount-unit-label"
+                id="amount-unit"
+                value={unit}
+                onChange={handleUnitChange}
+                label="金額単位"
+                sx={{ fontSize: '12px' }}
+                className="mb-4 pr-8"
+              >
+                <MenuItem value="">
+                  <p>選択してください</p>
+                </MenuItem>
+                <MenuItem value={1}>1円</MenuItem>
+                <MenuItem value={10}>10円</MenuItem>
+                <MenuItem value={100}>100円</MenuItem>
+                <MenuItem value={1000}>1000円</MenuItem>
+              </Select>
+            </FormControl>
           </div>
-        )}
+          {calculates.length > 0 && (
+            <div className="mb-8">
+              
+              {calculates.map((c, index) => (
+                <div
+                  key={index}
+                  className="flex ml-8 mr-6 mb-4 px-2 pb-2 justify-between items-center border-b-2 border-gray-200"
+                >
+                  <div className="flex flex-col items-start">
+                    <p className="text-xs">{c.from} → {c.to}</p>
+                  </div>
+                  <p className="w-[20%] text-xs">{formatAmount(c.amount, unit)}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
