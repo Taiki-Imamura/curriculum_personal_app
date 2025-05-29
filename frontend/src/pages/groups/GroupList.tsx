@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router';
 import type { User, Payment, Debt } from '../../types/types';
 import { formatDate } from '../../utils/date';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import NotFound from '../../NotFound';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const GroupList = () => {
   const navigate = useNavigate();
@@ -12,6 +16,7 @@ const GroupList = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [unit, setUnit] = React.useState('');
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -111,6 +116,18 @@ const GroupList = () => {
 }
   const debts = calculateDebts(payments, users);
 
+  // 金額単位の変更
+  const handleUnitChange = (event: SelectChangeEvent) => {
+    setUnit(event.target.value);
+  };
+
+  // 金額単位に応じて立て替え楽の表示変更
+  const formatAmount = (amount: number, unit: string): string => {
+    const unitValue = Number(unit) || 1;
+    const rounded = Math.round(amount / unitValue) * unitValue;
+    return `¥${rounded}`;
+  };
+
   return (
     <div className="overflow-y-auto">
       <h1 className="text-2xl text-center font-bold mt-10">支払いを記録しよう！</h1>
@@ -153,7 +170,34 @@ const GroupList = () => {
 
         {debts.length > 0 && (
           <div className="mb-6">
-            <p className="text-start text-sm font-bold my-4 px-12">立て替え額</p>
+            <div className="flex justify-between items-center mr-12">
+              <p className="text-start text-sm font-bold my-4 px-12">立て替え額</p>
+              <FormControl variant="standard">
+                <InputLabel 
+                  id="amount-unit-label" 
+                  sx={{ fontSize: '12px' }}
+                >
+                  金額単位
+                </InputLabel>
+                <Select
+                  labelId="amount-unit-label"
+                  id="amount-unit"
+                  value={unit}
+                  onChange={handleUnitChange}
+                  label="金額単位"
+                  sx={{ fontSize: '12px' }}
+                  className="mb-4 pr-8"
+                >
+                  <MenuItem value="">
+                    <p>選択してください</p>
+                  </MenuItem>
+                  <MenuItem value={1}>1円</MenuItem>
+                  <MenuItem value={10}>10円</MenuItem>
+                  <MenuItem value={100}>100円</MenuItem>
+                  <MenuItem value={1000}>1000円</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
             {debts.map((debt, index) => (
               <div
                 key={index}
@@ -162,7 +206,7 @@ const GroupList = () => {
                 <div className="flex flex-col items-start">
                   <p className="text-xs">{debt.from} → {debt.to}</p>
                 </div>
-                <p className="w-[20%] text-xs">¥{debt.amount}</p>
+                <p className="w-[20%] text-xs">{formatAmount(debt.amount, unit)}</p>
               </div>
             ))}
           </div>
