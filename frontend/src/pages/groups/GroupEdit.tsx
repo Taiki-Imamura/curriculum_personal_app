@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import Require from '../../components/Require';
 import Optional from '../../components/Optional';
 import Multiple from '../../components/Multiple';
-import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaCalendar } from "react-icons/fa6";
+import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaLink, FaCalendar } from "react-icons/fa6";
+import { MdDelete } from "react-icons/md";
 import {
   Select,
   MenuItem,
@@ -17,7 +18,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { CustomDateInput } from "../../components/CustomDateInput";
 import { useNavigate, useParams } from 'react-router';
-import type { User, Payment, Participant } from '../../types/types';
+import type { User, Payment, Participant, LinkItem } from '../../types/types';
 import LoadingSpinner from '../../components/LoadingSpinner'
 import NotFound from '../../NotFound';
 
@@ -34,6 +35,9 @@ const GroupEdit = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [linkItems, setLinkItems] = useState<LinkItem[]>([
+    { paypay_link: "", display_on_list: false },
+  ]);
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -63,6 +67,13 @@ const GroupEdit = () => {
           };
         });
         setPayees(newPayees);
+
+        if (targetPayment.paypay_links && Array.isArray(targetPayment.paypay_links)) {
+          setLinkItems(targetPayment.paypay_links.map(link => ({
+            paypay_link: link.paypay_link || "",
+            display_on_list: link.display_on_list || false,
+          })));
+        }
       } catch (err) {
         console.error(err);
         setNotFound(true);
@@ -136,6 +147,7 @@ const GroupEdit = () => {
             total_amount: trimmedTotalAmount,
             content,
             paid_at: selectedDate ? selectedDate.toISOString().split('T')[0] : Date.now(),
+            paypay_links: linkItems,
             payment_participants: users
               .filter((user) =>
                 selectedPayers.some(p => p.id === user.id) ||
@@ -293,6 +305,21 @@ const GroupEdit = () => {
     setPayees(newPayees);
   };
 
+  const handleLinkChange = (index: number, key: keyof LinkItem, value: string | boolean) => {
+    const updated = [...linkItems];
+    updated[index][key] = value as never;
+    setLinkItems(updated);
+  };
+
+  const addLinkItem = () => {
+    setLinkItems([...linkItems, { paypay_link: "", display_on_list: false }]);
+  };
+
+  const removeLinkItem = (index: number) => {
+    const updated = linkItems.filter((_, i) => i !== index);
+    setLinkItems(updated);
+  };
+
   return (
     <div className="overflow-y-auto">
       <div className="mx-8 mt-10">
@@ -431,6 +458,48 @@ const GroupEdit = () => {
               required
             />
           </div>
+        </div>
+
+        <div className="mt-6">
+          <div className="flex items-center mb-1 space-x-4">
+            <FaLink color="#F58220" className="text-2xl" />
+            <label className="text-xs">支払い先リンク</label>
+            <Optional />
+          </div>
+
+          {linkItems.map((item, index) => (
+            <div key={index} className="flex items-center space-x-4 ml-8 my-2">
+              <input
+                type="text"
+                className="input input-sm w-[70%] bg-[#F3F4F7] py-2"
+                value={item.paypay_link}
+                onChange={(e) => handleLinkChange(index, "paypay_link", e.target.value)}
+                placeholder="https://qr.paypay.ne.jp/"
+              />
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm bg-[#F3F4F7]"
+                  checked={item.display_on_list}
+                  onChange={(e) => handleLinkChange(index, "display_on_list", e.target.checked)}
+                />
+              </label>
+              <button
+                onClick={() => removeLinkItem(index)}
+                className="text-red-500 hover:text-red-700"
+                aria-label="削除"
+              >
+                <MdDelete size={24} />
+              </button>
+            </div>
+          ))}
+
+          <button
+            onClick={addLinkItem}
+            className="ml-8 mt-2 text-xs text-blue-600 hover:underline"
+          >
+            ＋ リンクを追加
+          </button>
         </div>
 
         <div className="mt-6">

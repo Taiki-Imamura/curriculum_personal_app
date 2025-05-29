@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaCalendar } from "react-icons/fa6";
+import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaLink, FaCalendar } from "react-icons/fa6";
 import { useNavigate, useParams } from 'react-router';
 import type { Payment } from '../../types/types';
 import LoadingSpinner from '../../components/LoadingSpinner';
@@ -158,6 +158,33 @@ const GroupShow = () => {
           </div>
           <p className="ml-10 mt-1 text-xs">{payment.title}</p>
         </div>
+
+        {payment.paypay_links && payment.paypay_links.length > 0 && (
+          <div>
+            <div className="flex items-center mb-4 space-x-4">
+              <FaLink color="#F58220" className="text-2xl" />
+              <label className="text-xs">支払いリンク</label>
+            </div>
+            <ul className="mx-10 mt-1 space-y-2">
+              {payment.paypay_links.map((link, index) => {
+                const displayedUrl = link.paypay_link.length > 40 ? link.paypay_link.substring(0, 40) + '...' : link.paypay_link;
+                return (
+                  <li key={index} className="text-xs truncate overflow-hidden whitespace-nowrap">
+                    <a
+                      href={link.paypay_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#007bff] underline"
+                      title={link.paypay_link}
+                    >
+                      {displayedUrl}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
 
         <div className="mb-6">
           <div className="flex items-center mb-4 space-x-4">

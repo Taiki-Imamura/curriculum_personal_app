@@ -3,6 +3,7 @@ class Payment < ApplicationRecord
 
   has_many :payment_participants, dependent: :destroy
   has_many :participants, through: :payment_participants, source: :user
+  has_many :payment_paypay_links, dependent: :destroy
 
   validates :title, presence: true
   validates :amount, presence: true, numericality: { only_integer: true, greater_than: 0 }

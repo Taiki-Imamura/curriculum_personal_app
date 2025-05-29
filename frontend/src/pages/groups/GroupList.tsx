@@ -167,6 +167,41 @@ const GroupList = () => {
             ))}
           </div>
         )}
+
+        <div className="mt-10 mb-6 mx-4">
+          {payments.map((payment) => {
+            const displayableLinks = payment.paypay_links?.filter((link) => link.display_on_list);
+
+            return (
+              displayableLinks && displayableLinks.length > 0 && (
+                <div key={payment.id} className="mt-6">
+                  <p className="ml-8 text-start text-sm font-bold">支払いリンク</p>
+                  <ul className="mt-1 space-y-2">
+                    {displayableLinks.map((link, index) => {
+                      const displayedUrl =
+                        link.paypay_link.length > 50
+                          ? link.paypay_link.substring(0, 50) + '...'
+                          : link.paypay_link;
+                      return (
+                        <li key={index} className="text-xs text-start ml-8 mt-2">
+                          <a
+                            href={link.paypay_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#007bff] underline"
+                            title={link.paypay_link}
+                          >
+                            {displayedUrl}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )
+            );
+          })}
+        </div>
       </div>
     </div>
   )

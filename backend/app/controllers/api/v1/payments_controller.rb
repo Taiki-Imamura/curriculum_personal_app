@@ -19,6 +19,16 @@ class Api::V1::PaymentsController < ApplicationController
         )
       end
 
+      if params[:payment][:paypay_links].present?
+        params[:payment][:paypay_links].each do |link|
+          PaymentPaypayLink.create!(
+            payment_id: payment.id,
+            paypay_link: link[:paypay_link],
+            display_on_list: link[:display_on_list]
+          )
+        end
+      end
+
       group = payment.group
       users = group.users
 
@@ -41,6 +51,12 @@ class Api::V1::PaymentsController < ApplicationController
                 paid_amount: pp.paid_amount,
                 is_payer: pp.is_payer
               }
+            end,
+            paypay_links: payment.payment_paypay_links.map do |pl|
+              {
+                paypay_link: pl.paypay_link,
+                display_on_list: pl.display_on_list
+              }
             end
           }
         ]
@@ -59,7 +75,6 @@ class Api::V1::PaymentsController < ApplicationController
     )
 
     payment.payment_participants.destroy_all
-
     params[:payment][:payment_participants].each do |pp|
       PaymentParticipant.create!(
         payment_id: payment.id,
@@ -69,6 +84,29 @@ class Api::V1::PaymentsController < ApplicationController
         share_amount: pp[:share_amount],
         share_rate: pp[:share_rate]
       )
+    end
+
+    if params[:payment][:paypay_links].present?
+      existing_link_ids = payment.payment_paypay_links.pluck(:id)
+      updated_link_ids = params[:payment][:paypay_links].map { |link| link[:id] }.compact
+
+      (existing_link_ids - updated_link_ids).each do |id|
+        payment.payment_paypay_links.find(id).destroy!
+      end
+
+      params[:payment][:paypay_links].each do |link|
+        if link[:id].present?
+          payment.payment_paypay_links.find(link[:id]).update!(
+            paypay_link: link[:paypay_link],
+            display_on_list: link[:display_on_list]
+          )
+        else
+          payment.payment_paypay_links.create!(
+            paypay_link: link[:paypay_link],
+            display_on_list: link[:display_on_list]
+          )
+        end
+      end
     end
 
     render json: { message: '更新が完了しました' }, status: :ok
