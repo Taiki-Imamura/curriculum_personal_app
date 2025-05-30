@@ -15,7 +15,7 @@ const PublishUrl = () => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(groupUrl);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
