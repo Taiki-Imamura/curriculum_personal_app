@@ -57,6 +57,7 @@ const GroupNew = () => {
   const handleCreatePayment = async () => {
     const trimmedTotalAmount = totalAmount.trim();
     const totalAmountNumber = Number(trimmedTotalAmount);
+    const filteredLinkItems = linkItems.filter(item => item.paypay_link.trim() !== "");
 
     if (!trimmedTotalAmount || isNaN(totalAmountNumber) || totalAmountNumber <= 0) {
       alert("合計金額を正しく入力してください");
@@ -119,7 +120,7 @@ const GroupNew = () => {
             total_amount: trimmedTotalAmount,
             content,
             paid_at: selectedDate ? selectedDate.toISOString().split('T')[0] : Date.now(),
-            paypay_links: linkItems,
+            paypay_links: filteredLinkItems,
             payment_participants: users
               .filter((user: User) => 
                 selectedPayers.some(p => p.id === user.id) || 
@@ -220,30 +221,85 @@ const GroupNew = () => {
       },
     };
 
-    const checkedUsers = users.filter((user: User) => updatedPayees[user.name]?.checked);
+    setPayees(updatedPayees);
+    evenDistribution(updatedPayees);
+  };
 
-    if (checkedUsers.length > 0) {
-      const base = Math.floor(100 / checkedUsers.length);
-      const remainder = 100 - base * checkedUsers.length;
+  const handleSelectAllPayees = () => {
+    const allChecked = Object.values(payees).every(p => p?.checked);
+    const newPayees: Record<string, { checked: boolean; percent: string }> = {};
+    users.forEach((user) => {
+      newPayees[user.name] = { 
+        checked: !allChecked, 
+        percent: payees[user.name]?.percent || '' 
+      };
+    });
+    setPayees(newPayees);
+  };
 
-      checkedUsers.forEach((user: User, idx: number) => {
-        updatedPayees[user.name] = {
-          checked: true,
-          percent: String(base + (idx === checkedUsers.length - 1 ? remainder : 0)),
-        };
-      });
-    }
+  const evenDistribution = (currentPayees: typeof payees) => {
+    const checkedUsers = users.filter((user) => currentPayees[user.name]?.checked);
 
     if (checkedUsers.length === 0) {
-      Object.keys(updatedPayees).forEach((key) => {
-        updatedPayees[key] = {
+      Object.keys(currentPayees).forEach((key) => {
+        currentPayees[key] = {
           checked: false,
           percent: '',
         };
       });
+      setPayees({...currentPayees});
+      return;
     }
 
-    setPayees(updatedPayees);
+    const basePercent = Math.floor(100 / checkedUsers.length);
+    const remainder = 100 - basePercent * checkedUsers.length;
+
+    checkedUsers.forEach((user) => {
+      currentPayees[user.name] = {
+        checked: true,
+        percent: String(basePercent),
+      };
+    });
+
+    for (let i = 0; i < remainder; i++) {
+      const index = i % checkedUsers.length;
+      currentPayees[checkedUsers[index].name].percent = String(Number(currentPayees[checkedUsers[index].name].percent) + 1);
+    }
+
+    let loop = true;
+    const maxIterations = 1000;
+    let iterationCount = 0;
+
+    while (loop && iterationCount < maxIterations) {
+      loop = false;
+      iterationCount++;
+
+      let totalPercent = 0;
+      checkedUsers.forEach((user) => {
+        totalPercent += Number(currentPayees[user.name].percent);
+      });
+      const averagePercent = totalPercent / checkedUsers.length;
+
+      checkedUsers.forEach((user) => {
+        const percent = Number(currentPayees[user.name].percent);
+        const diff = percent - averagePercent;
+
+        if (Math.abs(diff) > 1) {
+          loop = true;
+
+          const adjustAmount = Math.min(Math.abs(diff) / 2, 1);
+          const adjustDirection = diff > 0 ? -adjustAmount : adjustAmount;
+
+          currentPayees[user.name].percent = String(percent + adjustDirection);
+        }
+      });
+    }
+
+    setPayees({ ...currentPayees });
+
+    if (iterationCount === maxIterations) {
+      console.warn("偶数分布アルゴリズムが最大反復に達した。完全にバランスが取れていない可能性がある。");
+    }
   };
 
   const handlePayeePercentChange = (name: string, value: string) => {
@@ -257,23 +313,61 @@ const GroupNew = () => {
   };
 
   const handleEvenDistribution = () => {
-    const checkedUsers = users.filter((user: User) => payees[user.name]?.checked);
+    const checkedUsers = users.filter((user) => payees[user.name]?.checked);
 
     if (checkedUsers.length === 0) return;
 
-    const base = Math.floor(100 / checkedUsers.length);
-    const remainder = 100 - base * checkedUsers.length;
+    const basePercent = Math.floor(100 / checkedUsers.length);
+    const remainder = 100 - basePercent * checkedUsers.length;
 
-    const newPayees = { ...payees };
+    const newPayees: Record<string, { checked: boolean; percent: string }> = { ...payees };
 
-    checkedUsers.forEach((user: User, idx: number) => {
+    checkedUsers.forEach((user) => {
       newPayees[user.name] = {
         checked: true,
-        percent: String(base + (idx === checkedUsers.length - 1 ? remainder : 0)),
+        percent: String(basePercent),
       };
     });
 
+    for (let i = 0; i < remainder; i++) {
+      const index = i % checkedUsers.length;
+      newPayees[checkedUsers[index].name].percent = String(Number(newPayees[checkedUsers[index].name].percent) + 1);
+    }
+
+    let loop = true;
+    const maxIterations = 1000;
+    let iterationCount = 0;
+
+    while (loop && iterationCount < maxIterations) {
+      loop = false;
+      iterationCount++;
+
+      let totalPercent = 0;
+      checkedUsers.forEach((user) => {
+        totalPercent += Number(newPayees[user.name].percent);
+      });
+      const averagePercent = totalPercent / checkedUsers.length;
+
+      checkedUsers.forEach((user) => {
+        const percent = Number(newPayees[user.name].percent);
+        const diff = percent - averagePercent;
+
+        if (Math.abs(diff) > 1) {
+          loop = true;
+
+          const adjustAmount = Math.min(Math.abs(diff) / 2, 1);
+          const adjustDirection = diff > 0 ? -adjustAmount : adjustAmount;
+
+          newPayees[user.name].percent = String(percent + adjustDirection);
+        }
+      });
+    }
+
     setPayees(newPayees);
+
+    if (iterationCount === maxIterations) {
+      console.warn("偶数分布アルゴリズムが最大反復に達した。完全にバランスが取れていない可能性がある。");
+    }
   };
 
   const handleLinkChange = (index: number, key: keyof LinkItem, value: string | boolean) => {
@@ -372,10 +466,16 @@ const GroupNew = () => {
             <Require />
             <Multiple />
             <button 
-              className="text-[10px] bg-[#F3F4F7] border border-[#D9D9D9] ml-8 px-1 hover:cursor-pointer"
+              className="text-[10px] bg-[#F3F4F7] border border-[#D9D9D9] ml-4 px-1 hover:cursor-pointer"
+              onClick={handleSelectAllPayees}
+            >
+              全選択
+            </button>
+            <button 
+              className="text-[10px] bg-[#F3F4F7] border border-[#D9D9D9] px-1 hover:cursor-pointer"
               onClick={handleEvenDistribution}
             >
-              均等にする
+              均等
             </button>
           </div>
 
@@ -437,6 +537,8 @@ const GroupNew = () => {
             <label className="text-xs">支払い先リンク</label>
             <Optional />
           </div>
+
+          <p className="text-[9px] text-center text-red-500 ml-2">※一覧画面にもリンクを表示したい場合はチェックを入れてください</p>
 
           {linkItems.map((item, index) => (
             <div key={index} className="flex items-center space-x-4 ml-8 my-2">
