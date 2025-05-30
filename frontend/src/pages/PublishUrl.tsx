@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaCircleCheck } from "react-icons/fa6";
 
 const PublishUrl = () => {
-  const { publishId } = useParams();
+  const { uuid } = useParams();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const origin = window.location.origin;
+  const url = `${origin}/group/${uuid}`;
 
-  if (!publishId) {
+  if (!uuid) {
     navigate("/");
   }
 
@@ -20,11 +22,9 @@ const PublishUrl = () => {
       alert("コピーに失敗しました");
     }
   };
-
-  const groupUrl = `localhost:5173/group/${publishId}`;
   
   const handleGoToGroup = () => {
-    navigate(`/group/${publishId}`);
+    navigate(`/group/${uuid}`);
   };
 
   return (
@@ -45,7 +45,7 @@ const PublishUrl = () => {
           id="member_name"
           type="text"
           className="input input-sm bg-gray-100 border border-gray-200 px-2 w-[80%] mt-2"
-          value={groupUrl}
+          value={url}
           readOnly
         />
         <button 
