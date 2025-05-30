@@ -1,3 +1,5 @@
+import type { SelectChangeEvent } from '@mui/material';
+
 export type User = {
   id: number;
   name: string;
@@ -12,14 +14,29 @@ export type Participant = {
   is_payer: boolean;
 };
 
-export type Payment = {
-  id: number;
+export interface Payment {
+  id: string;
+  group_id: string;
   title: string;
   amount: number;
-  paid_at: string;
-  payer_name: string;
+  date: string;
+  created_by: string;
+  payers: Payer[];
+  payees: Payee[];
   participants: Participant[];
-};
+  paid_at: string;
+  paypay_links: LinkItem[];
+}
+
+export interface Payer {
+  user_id: string;
+  amount: number;
+}
+
+export interface Payee {
+  user_id: string;
+  amount: number;
+}
 
 export type LinkItem = {
   paypay_link: string;
@@ -31,3 +48,5 @@ export type Debt = {
   to: string;
   amount: number;
 };
+
+export type { SelectChangeEvent };

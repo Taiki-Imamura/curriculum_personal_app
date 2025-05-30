@@ -48,7 +48,7 @@ const GroupEdit = () => {
         const data = await res.json();
         setUsers(data.users);
         
-        const targetPayment = data.payments.find((p: Payment) => p.id === Number(paymentId));
+        const targetPayment = data.payments.find((p: Payment) => Number(p.id) === Number(paymentId));
         if (!targetPayment) return setNotFound(true);
 
         setTotalAmount(String(targetPayment.amount));
@@ -69,7 +69,7 @@ const GroupEdit = () => {
         setPayees(newPayees);
 
         if (targetPayment.paypay_links && Array.isArray(targetPayment.paypay_links)) {
-          setLinkItems(targetPayment.paypay_links.map(link => ({
+          setLinkItems(targetPayment.paypay_links.map((link: LinkItem) => ({
             paypay_link: link.paypay_link || "",
             display_on_list: link.display_on_list || false,
           })));

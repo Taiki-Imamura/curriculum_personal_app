@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaPerson, FaPeopleGroup, FaCreditCard, FaFile, FaLink, FaCalendar } from "react-icons/fa6";
 import { useNavigate, useParams } from 'react-router';
-import type { Payment } from '../../types/types';
+import type { Payment, LinkItem } from '../../types/types';
+import type { SelectChangeEvent } from '@mui/material';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import NotFound from '../../NotFound';
 import { formatDate } from '../../utils/date';
@@ -42,7 +43,7 @@ const GroupShow = () => {
   if (loading) return <LoadingSpinner />;
   if (notFound) return <NotFound />;
 
-  const payment = payments.find(p => p.id === Number(paymentId));
+  const payment = payments.find(p => Number(p.id) === Number(paymentId));
   if (!payment) return <NotFound />;
 
   const balances = payment.participants.map((p) => ({
@@ -209,8 +210,8 @@ const GroupShow = () => {
               <FaLink color="#F58220" className="text-2xl" />
               <label className="text-xs">支払いリンク</label>
             </div>
-            <ul className="mx-10 mt-1 space-y-2">
-              {payment.paypay_links.map((link, index) => {
+            <div className="ml-10 space-y-2">
+              {payment.paypay_links.map((link: LinkItem, index: number) => {
                 const displayedUrl = link.paypay_link.length > 40 ? link.paypay_link.substring(0, 40) + '...' : link.paypay_link;
                 return (
                   <li key={index} className="text-xs truncate overflow-hidden whitespace-nowrap">
@@ -226,7 +227,7 @@ const GroupShow = () => {
                   </li>
                 );
               })}
-            </ul>
+            </div>
           </div>
         )}
 

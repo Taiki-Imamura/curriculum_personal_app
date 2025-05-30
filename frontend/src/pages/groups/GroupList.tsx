@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router';
-import type { User, Payment, Debt } from '../../types/types';
+import type { User, Payment, Debt, LinkItem } from '../../types/types';
+import type { SelectChangeEvent } from '@mui/material';
 import { formatDate } from '../../utils/date';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import NotFound from '../../NotFound';
@@ -214,14 +215,14 @@ const GroupList = () => {
 
         <div className="mt-10 mb-6 mx-4">
           {payments.map((payment) => {
-            const displayableLinks = payment.paypay_links?.filter((link) => link.display_on_list);
+            const displayableLinks = payment.paypay_links?.filter((link: LinkItem) => link.display_on_list);
 
             return (
               displayableLinks && displayableLinks.length > 0 && (
                 <div key={payment.id} className="mt-6">
                   <p className="ml-8 text-start text-sm font-bold">支払いリンク</p>
                   <ul className="mt-1 space-y-2">
-                    {displayableLinks.map((link, index) => {
+                    {displayableLinks.map((link: LinkItem, index: number) => {
                       const displayedUrl =
                         link.paypay_link.length > 50
                           ? link.paypay_link.substring(0, 50) + '...'

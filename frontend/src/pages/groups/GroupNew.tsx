@@ -228,7 +228,7 @@ const GroupNew = () => {
   const handleSelectAllPayees = () => {
     const allChecked = Object.values(payees).every(p => p?.checked);
     const newPayees: Record<string, { checked: boolean; percent: string }> = {};
-    users.forEach((user) => {
+    users.forEach((user: User) => {
       newPayees[user.name] = { 
         checked: !allChecked, 
         percent: payees[user.name]?.percent || '' 
@@ -238,7 +238,7 @@ const GroupNew = () => {
   };
 
   const evenDistribution = (currentPayees: typeof payees) => {
-    const checkedUsers = users.filter((user) => currentPayees[user.name]?.checked);
+    const checkedUsers = users.filter((user: User) => currentPayees[user.name]?.checked);
 
     if (checkedUsers.length === 0) {
       Object.keys(currentPayees).forEach((key) => {
@@ -254,7 +254,7 @@ const GroupNew = () => {
     const basePercent = Math.floor(100 / checkedUsers.length);
     const remainder = 100 - basePercent * checkedUsers.length;
 
-    checkedUsers.forEach((user) => {
+    checkedUsers.forEach((user: User) => {
       currentPayees[user.name] = {
         checked: true,
         percent: String(basePercent),
@@ -275,12 +275,12 @@ const GroupNew = () => {
       iterationCount++;
 
       let totalPercent = 0;
-      checkedUsers.forEach((user) => {
+      checkedUsers.forEach((user: User) => {
         totalPercent += Number(currentPayees[user.name].percent);
       });
       const averagePercent = totalPercent / checkedUsers.length;
 
-      checkedUsers.forEach((user) => {
+      checkedUsers.forEach((user: User) => {
         const percent = Number(currentPayees[user.name].percent);
         const diff = percent - averagePercent;
 
@@ -313,7 +313,7 @@ const GroupNew = () => {
   };
 
   const handleEvenDistribution = () => {
-    const checkedUsers = users.filter((user) => payees[user.name]?.checked);
+    const checkedUsers = users.filter((user: User) => payees[user.name]?.checked);
 
     if (checkedUsers.length === 0) return;
 
@@ -322,7 +322,7 @@ const GroupNew = () => {
 
     const newPayees: Record<string, { checked: boolean; percent: string }> = { ...payees };
 
-    checkedUsers.forEach((user) => {
+    checkedUsers.forEach((user: User) => {
       newPayees[user.name] = {
         checked: true,
         percent: String(basePercent),
@@ -343,12 +343,12 @@ const GroupNew = () => {
       iterationCount++;
 
       let totalPercent = 0;
-      checkedUsers.forEach((user) => {
+      checkedUsers.forEach((user: User) => {
         totalPercent += Number(newPayees[user.name].percent);
       });
       const averagePercent = totalPercent / checkedUsers.length;
 
-      checkedUsers.forEach((user) => {
+      checkedUsers.forEach((user: User) => {
         const percent = Number(newPayees[user.name].percent);
         const diff = percent - averagePercent;
 
