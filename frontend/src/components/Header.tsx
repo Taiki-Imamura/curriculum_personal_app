@@ -1,6 +1,6 @@
 const Header = () => {
   return (
-    <header className="bg-[#F58220] text-white font-bold px-4 py-5">
+    <header className="bg-[#F58220] text-white font-bold px-4 pt-5 pb-4">
       <h1 className="text-2xl">
         <a href="/" className="ml-4">ワリペイ</a>
       </h1>
