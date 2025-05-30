@@ -8,6 +8,7 @@ import GroupList from "./pages/groups/GroupList";
 import GroupNew from "./pages/groups/GroupNew";
 import GroupShow from "./pages/groups/GroupShow";
 import GroupEdit from "./pages/groups/GroupEdit";
+import GroupSettings from "./pages/groups/GroupSettings";
 
 export const router = createBrowserRouter([
     {
@@ -41,6 +42,14 @@ export const router = createBrowserRouter([
           <GroupLayout>
             <GroupList />
           </GroupLayout>
+        </Layout>
+      )
+    },
+    {
+      path: "/group/:uuid/settings",
+      element: (
+        <Layout>
+          <GroupSettings />
         </Layout>
       )
     },

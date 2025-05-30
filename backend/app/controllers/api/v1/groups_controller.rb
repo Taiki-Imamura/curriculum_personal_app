@@ -52,4 +52,21 @@ class Api::V1::GroupsController < ApplicationController
       end
     }
   end
+
+  def update
+    group = Group.find_by!(uuid: params[:id])
+    group.update!(name: params[:group][:name])
+    group.group_users.destroy_all
+    params[:members].each do |name|
+      user = User.find_or_create_by!(name: name)
+      GroupUser.create!(group: group, user: user)
+    end
+    render json: { group_id: group.id, uuid: group.uuid }, status: :ok
+  end
+
+  def destroy
+    group = Group.find_by!(uuid: params[:id])
+    group.destroy!
+    render json: { message: 'グループを削除しました' }, status: :ok
+  end
 end
