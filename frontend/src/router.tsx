@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
       )
     },
     {
-      path: "/publish-url/:publishId",
+      path: "/publish-url/:uuid",
       element: (
         <Layout>
           <PublishUrl />
